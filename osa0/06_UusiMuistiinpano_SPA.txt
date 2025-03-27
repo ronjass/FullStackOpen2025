@@ -1,0 +1,9 @@
+title Uusi muistiinpano Single Page App -sivustolla
+
+note over selain: käyttäjä kirjoittaa lomakkeeseen ja painaa tallenna-nappia
+selain->palvelin: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+activate palvelin
+note right of palvelin: palvelin vastaanottaa uuden muistiinpanon ja tallentaa sen
+palvelin-->selain: HTTP statuskoodi 201 created
+deactivate palvelin
+note over selain: selain pysyy samalla sivulla ilman uudelleenlatausta
