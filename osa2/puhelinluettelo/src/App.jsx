@@ -3,6 +3,7 @@ import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
 import Notification from './components/Notification'
 import Error from './components/Error'
+import Filter from './components/Filter'
 import personsService from './services/persons'
 import './index.css'
 
@@ -12,6 +13,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [infoMessage, setInfoMessage] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
+  const [newFilter, setShowFilter] = useState('')
 
   useEffect(() => {
     personsService
@@ -99,19 +101,27 @@ const App = () => {
     }
   }
 
+  const handleFilterChange = (event) => {
+    console.log(event.target.value)
+    setShowFilter(event.target.value)
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
       <Notification info={infoMessage}/>
       <Error message={errorMessage}/>
+      <Filter newFilter={newFilter} handleFilterChange={handleFilterChange}/>
+      <h3>Add a new person</h3>
       <PersonForm name={newName} number={newNumber}
       handleNameChange={handleNameChange}
       handleNumberChange={handleNumberChange}
       addPerson={addPerson}
       />
-      <h2>Numbers</h2>
+      <h3>Numbers</h3>
       <Persons persons={persons}
       removePerson={removePerson}
+      newFilter={newFilter}
       />
     </div>
   )
