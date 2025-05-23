@@ -10,26 +10,26 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
 
 app.use(express.static('dist'))
 
-let persons = []
+//let persons = []
 
 app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
 })
   
 app.get('/api/persons', (request, response) => {
-    Person.find({}).then((persons) => {
-        response.json(persons)
+    Person.find({}).then(persons => {
+      response.json(persons)
     })
-})
+  })
 
 app.get('/api/persons/:id', (request, response) => {
-    const id = request.params.id
-    const person = persons.find(persons => persons.id === id)
+    Person.findById(request.params.id).then(person => {
     if (person) {
         response.json(person)
     } else {
         response.status(404).end()
     }
+    })
 })
  
 app.get('/api/info', (request, response) => {
@@ -67,24 +67,24 @@ app.post('/api/persons', (request, response) => {
         })
     }
 
-    if (persons.find((person) => person.name === body.name)) {
-        return response.status(400).json({
-            error: 'name nust be unique'
-        })
-    }
+    //if (persons.find((person) => person.name === body.name)) {
+        //return response.status(400).json({
+            //error: 'name nust be unique'
+        //})
+    //}
 
-    const person = {
+    const person = new Person({
         name: body.name,
         number: body.number,
-        id: generateID(),
-    }
+    })
 
-    persons = persons.concat(person)
-    response.json(person)
+    person.save().then(savedPerson => {
+        response.json(savedPerson)
+    })
 
     morgan.token('body', request => {
         return JSON.stringify(request.body)
-      })
+    })
 })
 
 const PORT = process.env.PORT
