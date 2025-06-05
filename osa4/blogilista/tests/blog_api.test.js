@@ -3,30 +3,16 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const assert = require('assert')
 const app = require('../app')
+const helper = require('./test_helper')
 const Blog = require('../models/blog')
 
 const api = supertest(app)
 
-const initialBlogs = [
-    {
-        title: "React patterns",
-        author: "Michael Chan",
-        url: "https://reactpatterns.com/",
-        likes: 7,
-      },
-      {
-        title: "Go To Statement Considered Harmful",
-        author: "Edsger W. Dijkstra",
-        url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
-        likes: 5,
-      },
-]
-
 beforeEach(async () => {
     await Blog.deleteMany({})
-    let blogObject = new Blog(initialBlogs[0])
+    let blogObject = new Blog(helper.initialBlogs[0])
     await blogObject.save()
-    blogObject = new Blog(initialBlogs[1])
+    blogObject = new Blog(helper.initialBlogs[1])
     await blogObject.save()
 })
 
@@ -37,7 +23,7 @@ test('blogs are returned as json', async () => {
     .expect('Content-Type', /application\/json/)
 })
 
-test.only('blogs are identified by id', async () => {
+test('blogs are identified by id', async () => {
     const response = await api.get('/api/blogs')
     const ids = response.body.map(blog => blog.id)
     console.log(ids)
@@ -45,6 +31,26 @@ test.only('blogs are identified by id', async () => {
     ids.forEach(id => { 
         assert.ok(id, 'Blogilla ei id:tä')
     })
+})
+
+test.only('a valid blog can be added', async () => {
+    const newBlog = {
+        title: "blogi",
+        author: 'matti',
+        url: 'osoite',
+        likes: 0
+    }
+    await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
+
+  const titles = blogsAtEnd.map(n => n.title)
+  assert(titles.includes('blogi'))
 })
 
 after(async () => {
