@@ -81,7 +81,7 @@ test('blog without title or url is not added', async () => {
     assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
 })
 
-test.only('blog can be deleted', async () => {
+test('blog can be deleted', async () => {
     const blogsAtStart = await helper.blogsInDb()
     const blogToDelete = blogsAtStart[0]
 
@@ -93,6 +93,28 @@ test.only('blog can be deleted', async () => {
     assert(!authors.includes(blogToDelete.author))
 
     assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
+})
+
+test.only('blog can be updated', async () => {
+    const updatedVersion = {
+        title: "React patterns",
+        author: "Michael Chan",
+        url: "https://reactpatterns.com/",
+        likes: 100
+    }
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToUpdate = blogsAtStart[0]
+
+    await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send(updatedVersion)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+    const blogsAtEnd = await helper.blogsInDb()
+
+    const updatedBlog = blogsAtEnd[0]
+    assert(updatedBlog.likes === 100)
 })
 
 after(async () => {
