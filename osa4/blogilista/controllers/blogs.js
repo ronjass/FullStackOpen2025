@@ -9,6 +9,12 @@ blogsRouter.get('/', async (request, response) => {
 blogsRouter.post('/', async (request, response, next) => {
     const body = request.body
 
+    if (!body.title) {
+      return response.status(400).end()
+    }
+    if (!body.url) {
+      return response.status(400).end()
+    } else {
     const blog = new Blog({
         title: body.title,
         author: body.author,
@@ -21,6 +27,7 @@ blogsRouter.post('/', async (request, response, next) => {
     } catch (expection) {
       next(expection)
     }
+  }
 })
   
 module.exports = blogsRouter

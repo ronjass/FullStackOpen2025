@@ -53,11 +53,7 @@ test('a valid blog can be added', async () => {
   assert(titles.includes('blogi'))
 })
 
-after(async () => {
-  await mongoose.connection.close()
-})
-
-test.only('likes is zero when no value is given', async () => {
+test('likes is zero when no value is given', async () => {
     const newBlog = {
         title: "blogi",
         author: 'matti',
@@ -74,4 +70,20 @@ test.only('likes is zero when no value is given', async () => {
 
     const lastBlog = blogsAtEnd[blogsAtEnd.length - 1]
     assert(lastBlog.likes === 0)
+})
+
+test.only('blog without title or url is not added', async () => {
+    const newBlog = {
+        author: 'matti',
+        likes: 11
+    }
+
+    await api.post('/api/blogs').send(newBlog).expect(400)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
+})
+
+after(async () => {
+  await mongoose.connection.close()
 })
