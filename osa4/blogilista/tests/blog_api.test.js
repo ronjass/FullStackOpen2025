@@ -10,114 +10,116 @@ const User = require('../models/user')
 
 const api = supertest(app)
 
-beforeEach(async () => {
-    await Blog.deleteMany({})
-    await Blog.insertMany(helper.initialBlogs)
-})
-
-test('blogs are returned as json', async () => {
-  await api
-    .get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
-})
-
-test('blogs are identified by id', async () => {
-    const response = await api.get('/api/blogs')
-    const ids = response.body.map(blog => blog.id)
-    console.log(ids)
-
-    ids.forEach(id => { 
-        assert.ok(id, 'Blogilla ei id:tä')
+describe('when there is initially some notes saved', () => {
+    beforeEach(async () => {
+        await Blog.deleteMany({})
+        await Blog.insertMany(helper.initialBlogs)
     })
-})
 
-test('a valid blog can be added', async () => {
-    const newBlog = {
-        title: "blogi",
-        author: 'matti',
-        url: 'osoite',
-        likes: 0
-    }
-    await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
+    test('blogs are returned as json', async () => {
+        await api
+        .get('/api/blogs')
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+    })
 
-  const blogsAtEnd = await helper.blogsInDb()
-  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
+    test('blogs are identified by id', async () => {
+        const response = await api.get('/api/blogs')
+        const ids = response.body.map(blog => blog.id)
+        console.log(ids)
 
-  const titles = blogsAtEnd.map(n => n.title)
-  assert(titles.includes('blogi'))
-})
+        ids.forEach(id => { 
+            assert.ok(id, 'Blogilla ei id:tä')
+        })
+    })
 
-test('likes is zero when no value is given', async () => {
-    const newBlog = {
-        title: "blogi",
-        author: 'matti',
-        url: 'osoite'
-    }
-    await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
+    test('a valid blog can be added', async () => {
+        const newBlog = {
+            title: "blogi",
+            author: 'matti',
+            url: 'osoite',
+            likes: 0
+        }
+        await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
 
-    const blogsAtEnd = await helper.blogsInDb()
-    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
+        const blogsAtEnd = await helper.blogsInDb()
+        assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
 
-    const lastBlog = blogsAtEnd[blogsAtEnd.length - 1]
-    assert(lastBlog.likes === 0)
-})
+        const titles = blogsAtEnd.map(n => n.title)
+        assert(titles.includes('blogi'))
+    })
 
-test('blog without title or url is not added', async () => {
-    const newBlog = {
-        author: 'matti',
-        likes: 11
-    }
+    test('likes is zero when no value is given', async () => {
+        const newBlog = {
+            title: "blogi",
+            author: 'matti',
+            url: 'osoite'
+        }
+        await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
 
-    await api.post('/api/blogs').send(newBlog).expect(400)
+        const blogsAtEnd = await helper.blogsInDb()
+        assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
 
-    const blogsAtEnd = await helper.blogsInDb()
-    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
-})
+        const lastBlog = blogsAtEnd[blogsAtEnd.length - 1]
+        assert(lastBlog.likes === 0)
+    })
 
-test('blog can be deleted', async () => {
-    const blogsAtStart = await helper.blogsInDb()
-    const blogToDelete = blogsAtStart[0]
+    test('blog without title or url is not added', async () => {
+        const newBlog = {
+            author: 'matti',
+            likes: 11
+        }
 
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
+        await api.post('/api/blogs').send(newBlog).expect(400)
 
-    const blogsAtEnd = await helper.blogsInDb()
+        const blogsAtEnd = await helper.blogsInDb()
+        assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
+    })
 
-    const authors = blogsAtEnd.map(n => n.author)
-    assert(!authors.includes(blogToDelete.author))
+    test('blog can be deleted', async () => {
+        const blogsAtStart = await helper.blogsInDb()
+        const blogToDelete = blogsAtStart[0]
 
-    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
-})
+        await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
 
-test('blog can be updated', async () => {
-    const updatedVersion = {
-        title: "React patterns",
-        author: "Michael Chan",
-        url: "https://reactpatterns.com/",
-        likes: 100
-    }
-    const blogsAtStart = await helper.blogsInDb()
-    const blogToUpdate = blogsAtStart[0]
+        const blogsAtEnd = await helper.blogsInDb()
 
-    await api
-    .put(`/api/blogs/${blogToUpdate.id}`)
-    .send(updatedVersion)
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
+        const authors = blogsAtEnd.map(n => n.author)
+        assert(!authors.includes(blogToDelete.author))
 
-    const blogsAtEnd = await helper.blogsInDb()
+        assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
+    })
 
-    const updatedBlog = blogsAtEnd[0]
-    assert(updatedBlog.likes === 100)
-})
+    test('blog can be updated', async () => {
+        const updatedVersion = {
+            title: "React patterns",
+            author: "Michael Chan",
+            url: "https://reactpatterns.com/",
+            likes: 100
+        }
+        const blogsAtStart = await helper.blogsInDb()
+        const blogToUpdate = blogsAtStart[0]
+
+        await api
+        .put(`/api/blogs/${blogToUpdate.id}`)
+        .send(updatedVersion)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+        const blogsAtEnd = await helper.blogsInDb()
+
+        const updatedBlog = blogsAtEnd[0]
+        assert(updatedBlog.likes === 100)
+        })
+    })
 
 describe('when there is initially one user at db', () => {
     beforeEach(async () => {
