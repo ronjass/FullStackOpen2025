@@ -172,6 +172,69 @@ describe('when there is initially one user at db', () => {
       assert.strictEqual(usersAtEnd.length, usersAtStart.length)
     })
   })
+
+  test('creation fails with proper statuscode and message if username is missing', async () => {
+    const usersAtStart = await helper.usersInDb()
+  
+      const newUser = {
+        username: '',
+        name: 'Superuser',
+        password: 'salainen'
+      }
+  
+      const result = await api
+        .post('/api/users')
+        .send(newUser)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+  
+      const usersAtEnd = await helper.usersInDb()
+      assert(result.body.error.includes('User validation failed: username: Path `username` is required.'))
+  
+      assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+  })
+
+  test('creation fails with proper statuscode and message if username too short', async () => {
+    const usersAtStart = await helper.usersInDb()
+  
+      const newUser = {
+        username: 'sa',
+        name: 'Superuser',
+        password: 'salainen'
+      }
+  
+      const result = await api
+        .post('/api/users')
+        .send(newUser)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+  
+      const usersAtEnd = await helper.usersInDb()
+      assert(result.body.error.includes('User validation failed: username: Path `username` (`sa`) is shorter than the minimum allowed length (3).'))
+  
+      assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+  })
+
+  test('creation fails with proper statuscode and message if password is missing or too short', async () => {
+    const usersAtStart = await helper.usersInDb()
+  
+      const newUser = {
+        username: 'testi',
+        name: 'Superuser',
+        password: ''
+      }
+  
+      const result = await api
+        .post('/api/users')
+        .send(newUser)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+  
+      const usersAtEnd = await helper.usersInDb()
+      assert(result.body.error.includes('password is too short'))
+  
+      assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+  })
   
 
 after(async () => {
