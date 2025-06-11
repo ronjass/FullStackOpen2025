@@ -1,10 +1,11 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hdHRpIiwiaWQiOiI2ODQ3ZTEwYTM5NzQzMDMzYzE4YzYyODciLCJpYXQiOjE3NDk2Mzk2NjJ9.0LfaFH14gVl6d5jaihgoOiIqtargh5fPLFhT2UFCtGc
 
 {
-    "title": "bestBlog",
-    "author": "anonym",
-    "url": "somewhere",
+    "title": "blogi",
+    "author": "matti",
+    "url": "internet",
     "likes": 0,
     "user": "6847e10a39743033c18c6287"
 }
