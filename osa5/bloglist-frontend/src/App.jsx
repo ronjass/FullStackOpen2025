@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
+import Notification from './components/Notification'
+import Error from './components/Error'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import './index.css'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -11,6 +14,8 @@ const App = () => {
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
+  const [infoMessage, setInfoMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
@@ -42,6 +47,20 @@ const App = () => {
         setTitle('')
         setAuthor('')
         setUrl('')
+        setInfoMessage(
+          `a new blog ${title} by ${author} added`
+        )
+        setTimeout(() => {
+          setInfoMessage(null)
+        }, 5000)
+      })
+      .catch(error => {
+        setErrorMessage(
+          `Information of blog is missing, please fill in all the fields`
+        )
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
       })
   }
 
@@ -60,6 +79,7 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
+      setErrorMessage('wrong username or password')
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -130,6 +150,8 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
+        <Notification info={infoMessage}/>
+        <Error message={errorMessage}/>
         {loginForm()}
       </div>
     )
@@ -137,6 +159,8 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
+      <Notification info={infoMessage}/>
+      <Error message={errorMessage}/>
       <p>{user.name} logged in
       <button onClick={() => logout()}>logout</button>
       </p>
