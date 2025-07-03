@@ -10,9 +10,6 @@ import './index.css'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
@@ -37,6 +34,14 @@ const App = () => {
   }, [])
 
   const addBlog = (blogObject) => {
+    if (!blogObject.title || !blogObject.author || !blogObject.url) {
+      setErrorMessage('Please fill in all the fields')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+      return
+    }
+  
     blogFormRef.current.toggleVisibility()
 
     blogService
@@ -44,7 +49,7 @@ const App = () => {
       .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
         setInfoMessage(
-          `a new blog ${title} by ${author} added`
+          `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`
         )
         setTimeout(() => {
           setInfoMessage(null)
@@ -52,7 +57,7 @@ const App = () => {
       })
       .catch(error => {
         setErrorMessage(
-          `Information of blog is missing, please fill in all the fields`
+          `Failed to add blog`
         )
         setTimeout(() => {
           setErrorMessage(null)
