@@ -10,8 +10,8 @@ import './index.css'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('') 
-  const [password, setPassword] = useState('') 
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [infoMessage, setInfoMessage] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
@@ -28,9 +28,9 @@ const App = () => {
   }, [])
 
   const getSortedBlogs = async () => {
-      const blogs =  await blogService.getAll()
-      blogs.sort((a,b) => b.likes - a.likes)
-      setBlogs( blogs )
+    const blogs =  await blogService.getAll()
+    blogs.sort((a,b) => b.likes - a.likes)
+    setBlogs( blogs )
   }
 
   useEffect(() => {
@@ -45,7 +45,7 @@ const App = () => {
       }, 5000)
       return
     }
-  
+
     blogFormRef.current.toggleVisibility()
 
     blogService
@@ -61,7 +61,7 @@ const App = () => {
       })
       .catch(error => {
         setErrorMessage(
-          `Failed to add blog`
+          'Failed to add blog'
         )
         setTimeout(() => {
           setErrorMessage(null)
@@ -93,17 +93,17 @@ const App = () => {
 
   const updateLikes = (id, updatedBlog) => {
     blogService
-    .update(id, updatedBlog)
-    .then(returnedBlog => {
-      returnedBlog.user = blogs.find(b => b.id === id).user
-      const updatedBlogs = (blogs.map(blog => blog.id !== id ? blog : returnedBlog))
-      updatedBlogs.sort((a, b) => b. likes - a.likes)
-      setBlogs( updatedBlogs )
-    })
-    .catch(error => {
-      setErrorMessage('Failed to update likes')
-      setTimeout(() => setErrorMessage(null), 5000)
-    })
+      .update(id, updatedBlog)
+      .then(returnedBlog => {
+        returnedBlog.user = blogs.find(b => b.id === id).user
+        const updatedBlogs = (blogs.map(blog => blog.id !== id ? blog : returnedBlog))
+        updatedBlogs.sort((a, b) => b. likes - a.likes)
+        setBlogs( updatedBlogs )
+      })
+      .catch(error => {
+        setErrorMessage('Failed to update likes')
+        setTimeout(() => setErrorMessage(null), 5000)
+      })
   }
 
   const handleLogin = async (event) => {
@@ -115,7 +115,7 @@ const App = () => {
       })
       window.localStorage.setItem(
         'loggedBlogAppUser', JSON.stringify(user)
-      ) 
+      )
       blogService.setToken(user.token)
       setUser(user)
       setUsername('')
@@ -132,7 +132,7 @@ const App = () => {
     <form onSubmit={handleLogin}>
       <div>
         username
-          <input
+        <input
           type="text"
           value={username}
           name="Username"
@@ -141,7 +141,7 @@ const App = () => {
       </div>
       <div>
         password
-          <input
+        <input
           type="password"
           value={password}
           name="Password"
@@ -149,8 +149,8 @@ const App = () => {
         />
       </div>
       <button type="submit">login</button>
-    </form>  
-    
+    </form>
+
   )
 
   const logout  = () => {
@@ -174,21 +174,21 @@ const App = () => {
       <Notification info={infoMessage}/>
       <Error message={errorMessage}/>
       <p>{user.name} logged in
-      <button onClick={() => logout()}>logout</button>
+        <button onClick={() => logout()}>logout</button>
       </p>
       <Togglable buttonLabel="create new" ref={blogFormRef}>
         <BlogForm createBlog={addBlog} />
       </Togglable>
-    
+
       <div>
-      {blogs.map(blog =>
-        <Blog 
-          key={blog.id} 
-          blog={blog} 
-          user={user}
-          updateLikes={updateLikes}
-          handleDelete={deleteBlog}/>
-      )}
+        {blogs.map(blog =>
+          <Blog
+            key={blog.id}
+            blog={blog}
+            user={user}
+            updateLikes={updateLikes}
+            handleDelete={deleteBlog}/>
+        )}
       </div>
     </div>
   )
