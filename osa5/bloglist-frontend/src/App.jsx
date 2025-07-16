@@ -69,6 +69,28 @@ const App = () => {
       })
   }
 
+  const deleteBlog = (blog) => {
+    const confirmDeletion = window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)
+    if (!confirmDeletion)
+      return
+
+    blogService
+      .remove(blog.id)
+      .then(() => {
+        setBlogs(blogs.filter(b => b.id !== blog.id))
+        setInfoMessage(`Succesfully deleted blog ${blog.title}`)
+        setTimeout(() => {
+          setInfoMessage(null)
+        }, 5000)
+      })
+      .catch(error => {
+        setErrorMessage('Failed to delete blog')
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      })
+  }
+
   const updateLikes = (id, updatedBlog) => {
     blogService
     .update(id, updatedBlog)
@@ -160,7 +182,12 @@ const App = () => {
     
       <div>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} updateLikes={updateLikes} user={user}/>
+        <Blog 
+          key={blog.id} 
+          blog={blog} 
+          user={user}
+          updateLikes={updateLikes}
+          handleDelete={deleteBlog}/>
       )}
       </div>
     </div>
