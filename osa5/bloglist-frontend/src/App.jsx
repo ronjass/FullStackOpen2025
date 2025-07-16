@@ -27,10 +27,14 @@ const App = () => {
     }
   }, [])
 
-  useEffect(() => {
-    blogService.getAll().then(blogs =>
+  const getSortedBlogs = async () => {
+      const blogs =  await blogService.getAll()
+      blogs.sort((a,b) => b.likes - a.likes)
       setBlogs( blogs )
-    )  
+  }
+
+  useEffect(() => {
+    getSortedBlogs()
   }, [])
 
   const addBlog = (blogObject) => {
@@ -70,9 +74,9 @@ const App = () => {
     .update(id, updatedBlog)
     .then(returnedBlog => {
       returnedBlog.user = blogs.find(b => b.id === id).user
-      setBlogs(blogs.map(blog =>
-        blog.id !== id ? blog : returnedBlog
-      ))
+      const updatedBlogs = (blogs.map(blog => blog.id !== id ? blog : returnedBlog))
+      updatedBlogs.sort((a, b) => b. likes - a.likes)
+      setBlogs( updatedBlogs )
     })
     .catch(error => {
       setErrorMessage('Failed to update likes')
