@@ -27,3 +27,31 @@ test('renders title but does not render url or likes', () => {
     const likesElement = screen.queryByText('likes 0')
     expect(likesElement).toBeNull()
 })
+
+test('renders all information after clicking show-button', async () => {
+    const blog = {
+        title: 'Test',
+        author: 'matti',
+        url: 'test.com',
+        likes: 0,
+        user: { username: 'matti', name: 'matti' },
+    }
+
+    const user = { username: 'matti' }
+
+    render(
+        <Blog 
+        blog={blog}
+        user={user} 
+        updateLikes={() => {}}
+        handleDelete={() => {}} />
+    )
+
+    const userEventTest = userEvent.setup()
+    const button = screen.getByText('show')
+    await userEventTest.click(button)
+
+    expect(screen.queryByText('test.com'))
+    expect(screen.queryByText('likes 0'))
+    expect(screen.queryByText('matti'))
+})

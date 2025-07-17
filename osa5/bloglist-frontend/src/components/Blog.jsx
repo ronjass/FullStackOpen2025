@@ -30,7 +30,6 @@ const Blog = ({ blog, updateLikes, handleDelete, user }) => {
 
   if (visible)
     return (
-      <li className='blogAll'>
       <div style={showWhenVisible}>
         <div style={blogStyle}>
           {blog.title} <button onClick={toggleVisibility}>hide</button> <br />
@@ -42,7 +41,6 @@ const Blog = ({ blog, updateLikes, handleDelete, user }) => {
           )}
         </div>
       </div>
-      </li>
 
     )
   else
