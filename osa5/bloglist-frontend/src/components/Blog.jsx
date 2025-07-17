@@ -17,7 +17,7 @@ const Blog = ({ blog, updateLikes, handleDelete, user }) => {
     setVisible(!visible)
   }
 
-  const deleteButton = blog.user && blog.user.username === user.username
+  const deleteButton = blog.user.username === user.username
 
   const like = () => {
     const updatedBlog = {
@@ -30,7 +30,7 @@ const Blog = ({ blog, updateLikes, handleDelete, user }) => {
 
   if (visible)
     return (
-      <li className='blog'>
+      <li className='blogAll'>
       <div style={showWhenVisible}>
         <div style={blogStyle}>
           {blog.title} <button onClick={toggleVisibility}>hide</button> <br />
@@ -47,12 +47,14 @@ const Blog = ({ blog, updateLikes, handleDelete, user }) => {
     )
   else
     return (
+      <li className='blog'>
       <div style={hideWhenVisible}>
         <div style={blogStyle}>
           {blog.title}
           <button onClick={toggleVisibility}>show</button>
         </div>
       </div>
+      </li>
     )
 }
 
