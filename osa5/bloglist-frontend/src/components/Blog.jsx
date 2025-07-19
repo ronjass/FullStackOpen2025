@@ -45,14 +45,14 @@ const Blog = ({ blog, updateLikes, handleDelete, user }) => {
     )
   else
     return (
-      <li className='blog'>
+      <div className='blog'>
       <div style={hideWhenVisible}>
         <div style={blogStyle}>
           {blog.title}
           <button onClick={toggleVisibility}>show</button>
         </div>
       </div>
-      </li>
+      </div>
     )
 }
 
