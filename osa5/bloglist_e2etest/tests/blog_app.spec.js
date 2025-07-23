@@ -43,4 +43,19 @@ describe('Login', () => {
         await expect(page.getByText('testi logged in')).not.toBeVisible()
     })
   })
+
+describe('When logged in', () => {
+    beforeEach(async ({ page }) => {
+        await loginWith(page, 'testi', 'salainentesti')
+    })
+
+    test('a new blog can be created', async ({ page }) => {
+        await page.getByRole('button', { name: 'create new' }).click()
+        await page.getByPlaceholder('write title here').fill('testiblogi')
+        await page.getByPlaceholder('write author here').fill('testi')
+        await page.getByPlaceholder('write url here').fill('testi.com')
+        await page.getByRole('button', { name: 'create' }).click()
+        await expect(page.getByText('testiblogi ')).toBeVisible()
+    })
+    })
 })

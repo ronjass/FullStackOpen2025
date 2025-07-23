@@ -188,7 +188,8 @@ const App = () => {
             blog={blog}
             user={user}
             updateLikes={updateLikes}
-            handleDelete={deleteBlog}/>
+            handleDelete={deleteBlog}
+            data-testid="createdBlogs"/>
         )}
       </div>
     </div>
