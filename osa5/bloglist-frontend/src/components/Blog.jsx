@@ -20,6 +20,11 @@ const Blog = ({ blog, updateLikes, handleDelete, user }) => {
   const deleteButton = blog.user.username === user.username
 
   const like = () => {
+    if (!blog.user || !blog.user.id) {
+      console.error('Blog has no user.id', blog)
+      return
+    }
+  
     const updatedBlog = {
       ...blog,
       likes: blog.likes + 1,
@@ -34,7 +39,7 @@ const Blog = ({ blog, updateLikes, handleDelete, user }) => {
         <div style={blogStyle}>
           {blog.title} <button onClick={toggleVisibility}>hide</button> <br />
           {blog.url} <br />
-        likes {blog.likes} <button onClick={like}>like</button> <br />
+         <span>likes {blog.likes}</span> <button onClick={like}>like</button> <br />
           {blog.user.name}
           {deleteButton && (
             <button onClick={() => handleDelete(blog)}>remove</button>

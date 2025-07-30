@@ -1,5 +1,5 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
-const { loginWith } = require('./helper')
+const { loginWith, createBlog } = require('./helper')
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
@@ -20,7 +20,7 @@ describe('Blog app', () => {
     await expect(locator).toBeVisible()
     const usernameBox = await page.getByTestId('username')
     await expect(usernameBox).toBeVisible
-    const passwordBox = await page.getByTestId('username')
+    const passwordBox = await page.getByTestId('password')
     await expect(passwordBox).toBeVisible
     const loginButton = await page.getByTestId('login')
     await expect(loginButton).toBeVisible
@@ -50,12 +50,27 @@ describe('When logged in', () => {
     })
 
     test('a new blog can be created', async ({ page }) => {
-        await page.getByRole('button', { name: 'create new' }).click()
-        await page.getByPlaceholder('write title here').fill('testiblogi')
-        await page.getByPlaceholder('write author here').fill('testi')
-        await page.getByPlaceholder('write url here').fill('testi.com')
-        await page.getByRole('button', { name: 'create' }).click()
-        await expect(page.getByText('testiblogi ')).toBeVisible()
+        await createBlog(page, 'testiblogi', 'testi', 'testi.com')
+        const infoDiv = await page.locator('.info')
+        await expect(infoDiv).toContainText('a new blog testiblogi by testi added')
+        const blogDiv = await page.locator('.blog')
+        await expect(blogDiv.getByText('testiblogi')).toBeVisible()
+    })
+
+    test('a blog can be liked', async ({ page }) => {
+        await createBlog(page, 'newblog', 'newtest', 'newtest.com')
+
+        const blogDiv = await page.locator('.blog')
+        const blogTitle = await blogDiv.getByText('newblog')
+        const blogTitleElement = await blogTitle.locator('..')
+
+        await blogTitleElement.getByRole('button', { name: 'show' }).click()
+
+        const blogLikes = await page.getByText('likes 0')
+        const blogLikesElemenet = await blogLikes.locator('..')
+
+        await blogLikesElemenet.getByRole('button', { name: 'like' }).click()
+        await expect(page.getByText('likes 1')).toBeVisible()
     })
     })
 })

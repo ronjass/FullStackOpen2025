@@ -19,6 +19,12 @@ const App = () => {
   const blogFormRef = useRef()
 
   useEffect(() => {
+    if (user) {
+      blogService.setToken(user.token)
+    }
+  }, [user])
+
+  useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
@@ -95,6 +101,14 @@ const App = () => {
     blogService
       .update(id, updatedBlog)
       .then(returnedBlog => {
+        const original = blogs.find(b => b.id === id)
+        if (!original) {
+          setErrorMessage('Failed to update blog: original not found')
+          setTimeout(() => setErrorMessage(null), 5000)
+          return
+        }
+  
+        returnedBlog.user = original.user
         returnedBlog.user = blogs.find(b => b.id === id).user
         const updatedBlogs = (blogs.map(blog => blog.id !== id ? blog : returnedBlog))
         updatedBlogs.sort((a, b) => b. likes - a.likes)
