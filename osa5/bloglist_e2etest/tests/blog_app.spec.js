@@ -3,8 +3,8 @@ const { loginWith, createBlog } = require('./helper')
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
-    await request.post('http://localhost:3003/api/testing/reset')
-    await request.post('http://localhost:3003/api/users', {
+    await request.post('/api/testing/reset')
+    await request.post('/api/users', {
       data: {
         name: 'testi',
         username: 'testi',
@@ -12,7 +12,7 @@ describe('Blog app', () => {
       }
     })
 
-    await page.goto('http://localhost:5173')
+    await page.goto('/')
   })
 
   test('Login form is shown', async ({ page }) => {
@@ -71,6 +71,28 @@ describe('When logged in', () => {
 
         await blogLikesElemenet.getByRole('button', { name: 'like' }).click()
         await expect(page.getByText('likes 1')).toBeVisible()
+    })
+
+    test('a blog can be deleted by its creator', async ({ page }) => {
+        await createBlog(page, 'deleteTest', 'deleter', 'delete.com')
+
+        const blogDiv = await page.locator('.blog')
+        const blogTitle = await blogDiv.getByText('deleteTest')
+        const blogTitleElement = await blogTitle.locator('..')
+
+        await blogTitleElement.getByRole('button', { name: 'show' }).click()
+
+        await expect(page.getByText('testi', { exact: true })).toBeVisible()
+
+        const blogAuthor = await page.getByText('testi', { exact: true })
+        const blogAuthorElemenet = await blogAuthor.locator('..')
+
+        page.on('dialog', dialog => dialog.accept())
+
+        await blogAuthorElemenet.getByRole('button', { name: 'remove' }).click()
+
+        await expect(blogDiv.getByText('deleteTest')).not.toBeVisible()
+
     })
     })
 })
