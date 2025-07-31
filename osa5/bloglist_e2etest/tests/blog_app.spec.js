@@ -94,5 +94,31 @@ describe('When logged in', () => {
         await expect(blogDiv.getByText('deleteTest')).not.toBeVisible()
 
     })
+
+    test('remove button is only seen by the creator of the blog', async ({ page, request }) => {
+        await createBlog(page, 'testiblogi', 'testi', 'testi.com')
+
+        await page.getByRole('button', { name: 'logout' }).click()
+
+        await request.post('/api/users', {
+            data: {
+              name: 'testi2',
+              username: 'testi2',
+              password: 'salainentesti2'
+            }
+          })
+
+        await loginWith(page, 'testi2', 'salainentesti2')
+
+        const blogDiv = await page.locator('.blog')
+        const blogTitle = await blogDiv.getByText('testiblogi')
+        const blogTitleElement = await blogTitle.locator('..')
+
+        await blogTitleElement.getByRole('button', { name: 'show' }).click()
+
+        await expect(page.getByText('testi', { exact: true })).toBeVisible()
+
+        await expect(page.getByRole('button', {name: 'remove'})).not.toBeVisible()
+    })
     })
 })
