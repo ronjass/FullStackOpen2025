@@ -33,32 +33,26 @@ const Blog = ({ blog, updateLikes, handleDelete, user }) => {
     updateLikes(blog.id, updatedBlog)
   }
 
-  if (visible)
-    return (
-      <div style={showWhenVisible}>
+  return (
+    <div className="blog">
+      {visible ? (
         <div style={blogStyle}>
           <span>{blog.title}</span> <button onClick={toggleVisibility}>hide</button> <br />
-          <span>{blog.url} </span><br />
-         <span>likes {blog.likes}</span> <button onClick={like}>like</button> <br />
+          <span>{blog.url}</span><br />
+          <span>likes {blog.likes}</span> <button onClick={like}>like</button> <br />
           <span>{blog.user.name}</span>
           {deleteButton && (
             <button onClick={() => handleDelete(blog)}>remove</button>
           )}
         </div>
-      </div>
-
-    )
-  else
-    return (
-      <div className='blog'>
-      <div style={hideWhenVisible}>
+      ) : (
         <div style={blogStyle}>
           <span>{blog.title}</span>
           <button onClick={toggleVisibility}>show</button>
         </div>
-      </div>
-      </div>
-    )
+      )}
+    </div>
+  )
 }
 
 export default Blog

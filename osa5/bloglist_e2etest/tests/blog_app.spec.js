@@ -1,5 +1,5 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
-const { loginWith, createBlog } = require('./helper')
+const { loginWith, createBlog, likeBlog } = require('./helper')
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
@@ -60,17 +60,7 @@ describe('When logged in', () => {
     test('a blog can be liked', async ({ page }) => {
         await createBlog(page, 'newblog', 'newtest', 'newtest.com')
 
-        const blogDiv = await page.locator('.blog')
-        const blogTitle = await blogDiv.getByText('newblog')
-        const blogTitleElement = await blogTitle.locator('..')
-
-        await blogTitleElement.getByRole('button', { name: 'show' }).click()
-
-        const blogLikes = await page.getByText('likes 0')
-        const blogLikesElemenet = await blogLikes.locator('..')
-
-        await blogLikesElemenet.getByRole('button', { name: 'like' }).click()
-        await expect(page.getByText('likes 1')).toBeVisible()
+        await likeBlog(page, 'newblog', 1)
     })
 
     test('a blog can be deleted by its creator', async ({ page }) => {
@@ -119,6 +109,28 @@ describe('When logged in', () => {
         await expect(page.getByText('testi', { exact: true })).toBeVisible()
 
         await expect(page.getByRole('button', {name: 'remove'})).not.toBeVisible()
+    })
+
+    test('blogs are sorted by likes', async ({ page}) => {
+        await createBlog(page, 'testiblogi', 'testi', 'testi.com')
+
+        await createBlog(page, 'newblog', 'newtest', 'newtest.com')
+
+        await likeBlog(page, 'newblog', 1)
+        await likeBlog(page, 'newblog', 2)
+        await likeBlog(page, 'newblog', 3)
+
+        await createBlog(page, 'deleteTest', 'deleter', 'delete.com')
+
+        await likeBlog(page, 'deleteTest', 1)
+
+        const blogsInOrder = await page.locator('.blog').evaluateAll(blogs => 
+          blogs.map(blog => blog.textContent)
+        )
+
+        expect(blogsInOrder[0]).toContain('newblog')
+        expect(blogsInOrder[1]).toContain('deleteTest')
+        expect(blogsInOrder[2]).toContain('testiblogi')
     })
     })
 })
