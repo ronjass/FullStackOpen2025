@@ -12,11 +12,6 @@ const Anecdotes = () => {
         }
     })
 
-    const vote = (id) => {
-        console.log('vote', id)
-        dispatch(voteAnecdote(id))
-    }
-
     return (
         <div>
         {anecdotes.map(anecdote =>
@@ -26,7 +21,7 @@ const Anecdotes = () => {
               </div>
               <div>
                 has {anecdote.votes}
-                <button onClick={() => vote(anecdote.id)}>vote</button>
+                <button onClick={() => dispatch(voteAnecdote(anecdote.id))}>vote</button>
               </div>
             </div>
         )}
