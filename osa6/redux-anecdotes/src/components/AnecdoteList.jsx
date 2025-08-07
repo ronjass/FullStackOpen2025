@@ -6,15 +6,15 @@ const Anecdotes = () => {
     const dispatch = useDispatch()
     const anecdotes = useSelector(state => {
         if (state.filter === 'ALL') {
-            return state.anecdotes 
+            return state.anecdotes.slice().sort((a, b) => b.votes - a.votes)
         } else {
             const filteredAnecdotes = state.anecdotes.filter(a => a.content.toLowerCase().includes(state.filter.toLowerCase()))
-            return filteredAnecdotes
+            return filteredAnecdotes.slice().sort((a, b) => b.votes - a.votes)
         }
     })
 
     const vote = (anecdote) => {
-        dispatch(voteAnecdote(anecdote.id))
+        dispatch(voteAnecdote(anecdote))
         dispatch(setNotificationTimeout(`you voted '${anecdote.content}'`, 5))
 
     }
