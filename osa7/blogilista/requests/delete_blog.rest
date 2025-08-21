@@ -1,0 +1,2 @@
+DELETE http://localhost:3003/api/blogs/684954b1598af4a85c1452e9
+Authorization: Bearer heippa
