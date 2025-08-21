@@ -1,9 +1,12 @@
 import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { setNotificationTimeout } from '../reducers/notificationReducer'
 
 const NewBlog = ({ doCreate }) => {
   const [title, setTitle] = useState('')
   const [url, setUrl] = useState('')
   const [author, setAuthor] = useState('')
+  const dispatch = useDispatch()
 
   const handleTitleChange = (event) => {
     setTitle(event.target.value)
@@ -23,6 +26,9 @@ const NewBlog = ({ doCreate }) => {
     setAuthor('')
     setTitle('')
     setUrl('')
+    dispatch(
+      setNotificationTimeout(`new blog: '${title}' by ${author} added`, 5)
+    )
   }
 
   return (
